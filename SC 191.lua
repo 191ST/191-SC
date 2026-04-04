@@ -127,7 +127,7 @@ local billboardMessages = {
     {text = "Discord.gg/h5CWN2sP4y", color = Color3.fromRGB(100,200,255)},
     {text = "Saran? ke dc ajaa", color = Color3.fromRGB(255,255,100)},
     {text = "Bug? lapor di dc", color = Color3.fromRGB(255,150,200)},
-    {text = "✨ CUSTOM RESPAWN ACTIVE", color = Color3.fromRGB(100,255,100)}
+    {text = "dibuat ama jeje ganteng", color = Color3.fromRGB(100,255,100)}
 }
 local currentBillboard = 1
 
