@@ -5,6 +5,24 @@ local VirtualInputManager = game:GetService("VirtualInputManager")
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+-- ========== CUSTOM RESPAWN ==========
+local RESPAWN_POINT = CFrame.new(729.86, 3.71, 444.46) * CFrame.Angles(-3.14, 0.01, -3.14)
+
+local function setupCustomRespawn()
+    player.CharacterAdded:Connect(function(character)
+        task.wait(0.1)
+        local hrp = character:FindFirstChild("HumanoidRootPart")
+        if hrp then
+            hrp.Anchored = true
+            hrp.CFrame = RESPAWN_POINT
+            task.wait(0.05)
+            hrp.Anchored = false
+        end
+    end)
+end
+
+setupCustomRespawn()
+
 -- ========== AMBIL REMOTE EVENTS ==========
 local remotes = ReplicatedStorage:FindFirstChild("RemoteEvents")
 local storePurchaseRE = remotes and remotes:FindFirstChild("StorePurchase")
@@ -108,13 +126,14 @@ MinCorner.CornerRadius = UDim.new(0,6)
 local billboardMessages = {
     {text = "Discord.gg/h5CWN2sP4y", color = Color3.fromRGB(100,200,255)},
     {text = "Saran? ke dc ajaa", color = Color3.fromRGB(255,255,100)},
-    {text = "Bug? lapor di dc", color = Color3.fromRGB(255,150,200)}
+    {text = "Bug? lapor di dc", color = Color3.fromRGB(255,150,200)},
+    {text = "✨ CUSTOM RESPAWN ACTIVE", color = Color3.fromRGB(100,255,100)}
 }
 local currentBillboard = 1
 
 task.spawn(function()
     while true do
-        task.wait(60)
+        task.wait(30)
         currentBillboard = (currentBillboard % #billboardMessages) + 1
         BillboardText.Text = billboardMessages[currentBillboard].text
         BillboardText.TextColor3 = billboardMessages[currentBillboard].color
@@ -237,7 +256,7 @@ AutoSellContent.Visible = false
 AutoSellContent.ScrollBarThickness = 4
 AutoSellContent.CanvasSize = UDim2.new(0,0,0,220)
 
--- ========== SEMUA LOKASI TELEPORT (SAMA PERSIS PATSTORE) ==========
+-- ========== SEMUA LOKASI TELEPORT ==========
 local LOCATIONS = {
     {name = "🏪 Dealer NPC",      pos = Vector3.new(770.992, 3.71, 433.75), desc = "Dealer Mobil"},
     {name = "🍬 NPC Marshmallow", pos = Vector3.new(510.061, 4.476, 600.548), desc = "Tempat Jual/Beli MS"},
@@ -252,7 +271,7 @@ local LOCATIONS = {
     {name = "⚒️ Material Storage", pos = Vector3.new(521.32, 47.79, 617.25), desc = "Tempat Bahan"},
 }
 
--- ========== TP FUNCTION SAMA PERSIS PATSTORE (moveVehicle) ==========
+-- ========== TP FUNCTION ==========
 local function moveVehicle(vehicle, targetPos)
     local anchor = vehicle.PrimaryPart
         or vehicle:FindFirstChildOfClass("VehicleSeat")
@@ -262,7 +281,6 @@ local function moveVehicle(vehicle, targetPos)
     local spawnPos = targetPos + Vector3.new(0,0.5,0)
     local newCF = CFrame.new(spawnPos, spawnPos + Vector3.new(0,0,1))
     
-    -- Freeze semua part
     for _,p in ipairs(vehicle:GetDescendants()) do
         if p:IsA("BasePart") then
             pcall(function()
@@ -274,7 +292,6 @@ local function moveVehicle(vehicle, targetPos)
     end
     task.wait(0.05)
     
-    -- Pindahkan
     if vehicle.PrimaryPart then
         vehicle:SetPrimaryPartCFrame(newCF)
     else
@@ -282,7 +299,6 @@ local function moveVehicle(vehicle, targetPos)
     end
     task.wait(0.05)
     
-    -- Unfreeze
     for _,p in ipairs(vehicle:GetDescendants()) do
         if p:IsA("BasePart") then
             pcall(function()
@@ -306,7 +322,6 @@ local function stepTeleport(targetPos)
             moveVehicle(vehicle, targetPos)
         end
     else
-        -- Jika tidak naik kendaraan, pindah langsung
         local hrp = character:FindFirstChild("HumanoidRootPart")
         if hrp then
             hrp.CFrame = CFrame.new(targetPos)
@@ -1092,7 +1107,7 @@ local function startMSLoop()
     end)
 end
 
--- ========== AUTO BUY FUNCTIONS (FIX - PAKAI DELAY YANG BENAR) ==========
+-- ========== AUTO BUY FUNCTIONS ==========
 local autoBuyRunning = false
 local currentBuyAmount = 10
 local autoBuyTotalBought = 0
@@ -1135,7 +1150,6 @@ local function startAutoBuy()
             BuyStatusValue.Text = "🛒 Membeli " .. item.display .. " x" .. amount
             BuyStatusValue.TextColor3 = Color3.fromRGB(255,255,100)
             
-            -- Beli satu per satu dengan delay yang cukup
             for i = 1, amount do
                 if not autoBuyRunning then break end
                 
@@ -1145,12 +1159,9 @@ local function startAutoBuy()
                 
                 autoBuyTotalBought = autoBuyTotalBought + 1
                 BuyTotalLabel.Text = "Total: " .. autoBuyTotalBought .. " item"
-                
-                -- DELAY YANG LEBIH LAMA (0.5 detik) AGAR TIDAK DIANGGAP SPAM
                 task.wait(0.5)
             end
             
-            -- Jeda antar item berbeda
             task.wait(0.8)
         end
         
@@ -1174,10 +1185,9 @@ local function stopAutoBuy()
     BuyStatusValue.TextColor3 = Color3.fromRGB(255,100,100)
 end
 
--- ========== SLIDER AUTO BUY (FIX - TIDAK IKUT MOUSE DI LUAR) ==========
+-- ========== SLIDER AUTO BUY ==========
 local isDraggingSlider = false
 
--- Mouse down di slider
 JumlahSliderBg.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         isDraggingSlider = true
@@ -1190,14 +1200,12 @@ JumlahSliderBg.InputBegan:Connect(function(input)
     end
 end)
 
--- Mouse move saat drag
 UIS.InputChanged:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseMovement and isDraggingSlider then
         local mousePos = input.Position.X
         local sliderPos = JumlahSliderBg.AbsolutePosition.X
         local sliderWidth = JumlahSliderBg.AbsoluteSize.X
         
-        -- Hanya update jika mouse masih di dalam area slider
         local mouseInSlider = (mousePos >= sliderPos and mousePos <= sliderPos + sliderWidth)
         
         if mouseInSlider then
@@ -1208,7 +1216,6 @@ UIS.InputChanged:Connect(function(input)
     end
 end)
 
--- Mouse up (berhenti drag)
 UIS.InputEnded:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 then
         isDraggingSlider = false
@@ -1341,18 +1348,15 @@ CloseBtn.MouseButton1Click:Connect(function()
     ScreenGui:Destroy()
 end)
 
--- MS Loop Buttons
 MSLoopStartBtn.MouseButton1Click:Connect(function()
     if not loopRunning then task.spawn(startMSLoop) end
 end)
 MSLoopStopBtn.MouseButton1Click:Connect(function() loopRunning = false end)
 RefreshBtn.MouseButton1Click:Connect(updateBuyIndicators)
 
--- Auto Buy Buttons
 BuyStartBtn.MouseButton1Click:Connect(startAutoBuy)
 BuyStopBtn.MouseButton1Click:Connect(stopAutoBuy)
 
--- Auto Sell Buttons
 AutoSellStartBtn.MouseButton1Click:Connect(startAutoSell)
 AutoSellStopBtn.MouseButton1Click:Connect(stopAutoSell)
 
@@ -1532,3 +1536,20 @@ task.spawn(function()
         end
     end
 end)
+
+-- Notifikasi custom respawn aktif
+task.wait(2)
+local notif = Instance.new("TextLabel")
+notif.Parent = player.PlayerGui
+notif.Size = UDim2.new(0, 260, 0, 35)
+notif.Position = UDim2.new(1, -270, 1, -45)
+notif.BackgroundColor3 = Color3.fromRGB(30,30,40)
+notif.Text = "MPRUY LU"
+notif.TextColor3 = Color3.fromRGB(100,255,100)
+notif.TextSize = 12
+notif.Font = Enum.Font.GothamBold
+local notifCorner = Instance.new("UICorner")
+notifCorner.Parent = notif
+notifCorner.CornerRadius = UDim.new(0, 6)
+task.wait(3)
+notif:Destroy()
