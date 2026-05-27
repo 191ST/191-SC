@@ -118,8 +118,7 @@ LRM_INIT_SCRIPT(function()
         end)
 
         if not Success and (not Function or typeof(Function) ~= "function") then
-            game:GetService("Players").LocalPlayer:Kick("Valary.gg | Anti-Cheat was updated! Wait for script update, you can not use it at this moment.")
-            task.wait(9e9)
+        
         end
 
         debug.setupvalue(Function, 4, 0/0)
@@ -160,8 +159,7 @@ do -- Hyphon Emulation
 
     if not shared.Emulation_Loaded and (Hyphon_Script or OWpCsbCTXfeDG) then
         if not OWpCsbCTXfeDG then
-            return LocalPlayer:Kick("EMULATOR ERROR : 'OWpCsbCTXfeDG' NOT FOUND!")
-        end
+	end
 
         local Function_2247, V5_Function = filtergc('function', {StartLine = 2247, Source = debug.info(OWpCsbCTXfeDG, "s")}, true), filtergc('function', {StartLine = 2823, Source = debug.info(OWpCsbCTXfeDG, "s")}, true)
 
@@ -280,7 +278,7 @@ do -- Hyphon Emulation
         }, {})
 
         if typeof(Emulator.Remote) ~= "Instance" or Emulator.Handshake_V5:len() > 4 or typeof(Emulator.TenthArgument_Table) ~= "table" then
-            return LocalPlayer:Kick(string.format("EMULATOR ERROR : UPVALUES / FUNCTIONS HAVE CHANGED! %s %s %s", tostring(typeof(Emulator.Remote) ~= "Instance"), tostring(Emulator.Handshake_V5:len() > 4), tostring(typeof(Emulator.TenthArgument_Table) ~= "table")))
+           
         end
 
         loadstring([[
@@ -293,8 +291,7 @@ do -- Hyphon Emulation
             end
 
             if not _Script_ then
-                game:GetService("Players").LocalPlayer:Kick("EMULATOR ERROR : AC Script Couldn't Be Found.")
-                task.wait(9e9)
+             
             end
 
             local Bit_32; Bit_32 = hookfunction(bit32.bxor, function(...) 
